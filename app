@@ -49,6 +49,8 @@ function help_echo
   echo " -argv[1]:the command to execute"
   echo "  -Available:
       debian_based >>> Build debian_based distro,use -a to build them all
+      arch_based {archlinux,manjarolinux} >>> build archbased distro
+      voidlinux >>> build voidlinux
       downloadable >>> build all downloadable image"
   echo "======================================"
 end
@@ -181,14 +183,14 @@ function voidlinux
     else
         mkdir voidlinux
     end
-    XBPS_ARCH=x86_64 HTTP_PROXY=http://127.0.0.1:7890/ xbps-install -S -r /mnt -R "https://alpha.de.repo.voidlinux.org/current" base-minimal
+    XBPS_ARCH=x86_64 HTTP_PROXY=http://127.0.0.1:7890/ xbps-install -S -r /mnt -R "https://alpha.de.repo.voidlinux.org/current" base-minimal fish-shell bash ncurses
     cd voidlinux
     tar zcf voidlinux.tar.gz .
     cd ..
     mv voidlinux/voidlinux.tar.gz .
 end
 
-echo Build_Time_UTC=2022-01-18_04:21:23
+echo Build_Time_UTC=2022-01-18_04:35:38
 set -lx prefix [ctc-rootfs-build-system]
 switch $argv[1]
 case debian_based
@@ -197,6 +199,8 @@ case arch_based
     arch_based $argv[2..-1]
 case downloadable
     downloadable
+case voidlinux
+    voidlinux
 case v version
     logger 0 "FrostFlower@build0"
 case help h '*'

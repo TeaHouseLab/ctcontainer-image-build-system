@@ -6,6 +6,8 @@ case arch_based
     arch_based $argv[2..-1]
 case downloadable
     downloadable
+case voidlinux
+    voidlinux
 case v version
     logger 0 "FrostFlower@build0"
 case help h '*'
