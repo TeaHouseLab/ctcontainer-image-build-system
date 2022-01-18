@@ -5,6 +5,7 @@ function help_echo
   set_color normal
   echo " -argv[1]:the command to execute"
   echo "  -Available:
-      debian_based >>> Build debian_based distro,use -a to build them all"
+      debian_based >>> Build debian_based distro,use -a to build them all
+      downloadable >>> build all downloadable image"
   echo "======================================"
 end

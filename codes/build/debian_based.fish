@@ -16,7 +16,6 @@ debian-testing
 debian-unstable
 deepin-stable
 parrotsec-testing
-mxlinux-stable
 kali-rolling
 ubuntu-stable"
             logger 0 "Type them below,use space for multiple images"
@@ -42,10 +41,6 @@ ubuntu-stable"
                     set no_check_gpg true
                     set branch testing
                     set now_source http://deb.parrotsec.org/parrot
-                case mxlinux-stable
-                    set no_check_gpg true
-                    set branch bullseye
-                    set now_source http://mxrepo.com/mx/repo/
                 case kali-rolling
                     set no_check_gpg true
                     set branch kali-rolling
@@ -60,7 +55,7 @@ ubuntu-stable"
                 exit
             end
             if [ "$no_check_gpg" = true ]
-                sudo env http_proxy=http://127.0.0.1:7890 DEBIAN_FRONTEND=noninteractive debootstrap --no-check-gpg $branch $now_distro $now_source
+                sudo env http_proxy=http://127.0.0.1:7890 https_proxy=http://127.0.0.1:7890 DEBIAN_FRONTEND=noninteractive debootstrap --no-check-gpg $branch $now_distro $now_source
                 cd $now_distro
                 tar zcf $now_distro.tar.gz .
                 cd ..
@@ -68,7 +63,7 @@ ubuntu-stable"
                 echo $now_distro >> built/available
                 logger 1 "Built,rootfs at $now_distro.tar.gz"
             else
-                sudo env http_proxy=http://127.0.0.1:7890 DEBIAN_FRONTEND=noninteractive debootstrap $branch $now_distro $now_source
+                sudo env http_proxy=http://127.0.0.1:7890 https_proxy=http://127.0.0.1:7890 DEBIAN_FRONTEND=noninteractive debootstrap $branch $now_distro $now_source
                 cd $now_distro
                 tar zcf $now_distro.tar.gz .
                 cd ..
