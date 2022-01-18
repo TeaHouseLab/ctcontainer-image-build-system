@@ -183,14 +183,14 @@ function voidlinux
     else
         mkdir voidlinux
     end
-    XBPS_ARCH=x86_64 HTTP_PROXY=http://127.0.0.1:7890/ xbps-install -S -r /mnt -R "https://alpha.de.repo.voidlinux.org/current" base-minimal fish-shell bash ncurses
+    XBPS_ARCH=x86_64 HTTP_PROXY=http://127.0.0.1:7890/ xbps-install -S -r voidlinux -R "https://alpha.de.repo.voidlinux.org/current" base-minimal fish-shell bash ncurses
     cd voidlinux
     tar zcf voidlinux.tar.gz .
     cd ..
     mv voidlinux/voidlinux.tar.gz .
 end
 
-echo Build_Time_UTC=2022-01-18_04:35:38
+echo Build_Time_UTC=2022-01-18_04:41:12
 set -lx prefix [ctc-rootfs-build-system]
 switch $argv[1]
 case debian_based
