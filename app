@@ -1,6 +1,5 @@
 #!/usr/bin/env fish
 
-#!/usr/bin/env fish
 function logger-warn
   set_color magenta
   echo "$prefix [Warn] $argv[1..-1]"
@@ -23,7 +22,7 @@ function logger-debug
 end
 function logger-success
   set_color green
-  echo "$prefix [Successed] $argv[1..-1]"
+  echo "$prefix [Succeeded] $argv[1..-1]"
   set_color normal
 end
 function logger -d "a lib to print msg quickly"
@@ -53,6 +52,24 @@ function help_echo
       voidlinux >>> build voidlinux
       downloadable >>> build all downloadable image"
   echo "======================================"
+end
+
+function install
+set installname $argv[1]
+  set dir (pwd)
+  set filename (status --current-filename)
+  chmod +x $dir/$filename
+  sudo cp $dir/$filename /usr/bin/$installname
+  set_color green
+  echo "$prefix Installed"
+  set_color normal
+end
+function uninstall
+set installname $argv[1]
+  sudo rm /usr/bin/$installname
+  set_color green
+  echo "$prefix Removed"
+  set_color normal
 end
 
 function arch_based
@@ -190,7 +207,7 @@ function voidlinux
     mv voidlinux/voidlinux.tar.gz .
 end
 
-echo Build_Time_UTC=2022-01-18_04:41:12
+echo Build_Time_UTC=2022-01-24_03:02:42
 set -lx prefix [ctc-rootfs-build-system]
 switch $argv[1]
 case debian_based
@@ -202,7 +219,7 @@ case downloadable
 case voidlinux
     voidlinux
 case v version
-    logger 0 "FrostFlower@build0"
+    logger 0 "BlackDeath@build1"
 case help h '*'
     help_echo
 end

@@ -9,7 +9,7 @@ case downloadable
 case voidlinux
     voidlinux
 case v version
-    logger 0 "FrostFlower@build0"
+    logger 0 "BlackDeath@build1"
 case help h '*'
     help_echo
 end
