@@ -4,8 +4,8 @@ case debian_based
     debian_based $argv[2..-1]
 case arch_based
     arch_based $argv[2..-1]
-case downloadable
-    downloadable
+case alpinelinux
+    alpinelinux
 case voidlinux
     voidlinux
 case v version
