@@ -73,13 +73,13 @@ set installname $argv[1]
 end
 
 function centos
-    logger "Building centos7 amd64"
+    logger 3 "Building centos7 amd64"
     if sudo distrobuilder build-lxc ./files/centos.yaml -o image.architecture=x86_64 -o image.release=7 -o image.variant=default -o source.url=http://mirrors.nju.edu.cn/centos/ -o source.skip_verification=true
         rm meta.tar.xz && mv rootfs.tar.xz centos7
     else
         logger 4 "error when building centos7 amd64"
     end
-    logger "Building centos7 arm64"
+    logger 3 "Building centos7 arm64"
     if sudo distrobuilder build-lxc ./files/centos.yaml -o image.architecture=aarch64 -o image.release=7 -o image.variant=default -o source.url=http://mirrors.nju.edu.cn/centos-altarch/ -o source.skip_verification=true
         rm meta.tar.xz && mv rootfs.tar.xz centos7arm64
     else
@@ -87,13 +87,13 @@ function centos
     end
 
 
-    logger "Building centos8 amd64"
+    logger 3 "Building centos8 amd64"
     if sudo distrobuilder build-lxc ./files/centos.yaml -o image.architecture=x86_64 -o image.release=8-Stream -o image.variant=default -o source.url=http://mirrors.nju.edu.cn/centos/ -o source.skip_verification=true
         rm meta.tar.xz && mv rootfs.tar.xz centos8
     else
         logger 4 "error when building centos8 amd64"
     end
-    logger "Building centos8 arm64"
+    logger 3 "Building centos8 arm64"
     if sudo distrobuilder build-lxc ./files/centos.yaml -o image.architecture=aarch64 -o image.release=8-Stream -o image.variant=default -o source.url=http://mirrors.nju.edu.cn/centos-altarch/ -o source.skip_verification=true
         rm meta.tar.xz && mv rootfs.tar.xz centos8arm64
     else
@@ -101,14 +101,14 @@ function centos
     end
 end
 function alpinelinux
-    logger "Building alpinelinux edge amd64"
+    logger 3 "Building alpinelinux edge amd64"
     if sudo distrobuilder build-lxc ./files/alpinelinux.yaml -o image.architecture=x86_64 -o image.release=edge -o image.variant=default
         rm meta.tar.xz && mv rootfs.tar.xz alpinelinux
     else
         logger 4 "error when building alpinelinux edge amd64"
     end
-    logger "Building alpinelinux edge arm64"
-    if sudo distrobuilder build-lxc alpinelinux.yaml -o image.architecture=aarch64 -o image.release=edge -o image.variant=default
+    logger 3 "Building alpinelinux edge arm64"
+    if sudo distrobuilder build-lxc ./files/alpinelinux.yaml -o image.architecture=aarch64 -o image.release=edge -o image.variant=default
         rm meta.tar.xz && mv rootfs.tar.xz alpinelinuxarm64
     else
         logger 4 "error when building alpinelinux edge arm64"
@@ -116,14 +116,14 @@ function alpinelinux
 end
 
 function archlinux
-    logger "Building archlinux amd64"
+    logger 3 "Building archlinux amd64"
     if sudo distrobuilder build-lxc ./files/archlinux.yaml -o image.architecture=x86_64 -o image.variant=default
         rm meta.tar.xz && mv rootfs.tar.xz archlinux
     else
         logger 4 "error when building archlinux amd64"
     end
-    logger "Building archlinux arm64"
-    if sudo distrobuilder build-lxc archlinux.yaml -o image.architecture=aarch64 -o image.variant=default
+    logger 3 "Building archlinux arm64"
+    if sudo distrobuilder build-lxc ./files/archlinux.yaml -o image.architecture=aarch64 -o image.variant=default
         rm meta.tar.xz && mv rootfs.tar.xz archlinuxarm64
     else
         logger 4 "error when building archlinux arm64"
@@ -131,14 +131,14 @@ function archlinux
 end
 
 function debian
-    logger "Building debian-stable amd64"
+    logger 3 "Building debian-stable amd64"
     if sudo distrobuilder build-lxc ./files/debian.yaml -o image.architecture=amd64 -o image.release=bullseye -o image.variant=default -o source.url="http://mirrors.bfsu.edu.cn/debian"
         rm meta.tar.xz && mv rootfs.tar.xz debian-stable
     else
         logger 4 "error when building debian-stable amd64"
     end
-    logger "Building debian-stable arm64"
-    if sudo distrobuilder build-lxc debian.yaml -o image.architecture=arm64 -o image.release=bullseye -o image.variant=default -o source.url="http://mirrors.bfsu.edu.cn/debian"
+    logger 3 "Building debian-stable arm64"
+    if sudo distrobuilder build-lxc ./files/debian.yaml -o image.architecture=arm64 -o image.release=bullseye -o image.variant=default -o source.url="http://mirrors.bfsu.edu.cn/debian"
         rm meta.tar.xz && mv rootfs.tar.xz debian-stablearm64
     else
         logger 4 "error when building debian-stable arm64"
@@ -158,7 +158,7 @@ function voidlinux
     mv voidlinux/voidlinux.tar.gz .
 end
 
-echo Build_Time_UTC=2022-05-28_03:46:46
+echo Build_Time_UTC=2022-05-28_03:52:29
 set -lx prefix [ctc-rootfs-build-system]
 switch $argv[1]
 case debian
