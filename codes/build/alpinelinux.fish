@@ -1,14 +1,14 @@
 function alpinelinux
-    cd /ctcontainer_share
-    if test -d alpinelinux
+    logger "Building alpinelinux edge amd64"
+    if sudo distrobuilder build-lxc ./files/alpinelinux.yaml -o image.architecture=x86_64 -o image.release=edge -o image.variant=default
+        rm meta.tar.xz && mv rootfs.tar.xz alpinelinux
     else
-        mkdir alpinelinux
+        logger 4 "error when building alpinelinux edge amd64"
     end
-    env apk --arch x86_64 -X https://dl-cdn.alpinelinux.org/alpine/edge/main/ -U --allow-untrusted --root /ctcontainer_share/alpinelinux --initdb add alpine-base bash fish coreutils
-    cd alpinelinux
-    echo "https://dl-cdn.alpinelinux.org/alpine/edge/main
-http://dl-cdn.alpinelinux.org/alpine/edge/community" >etc/apk/repositories
-    tar zcf alpinelinux.tar.gz .
-    cd ..
-    mv alpinelinux/alpinelinux.tar.gz .
+    logger "Building alpinelinux edge arm64"
+    if sudo distrobuilder build-lxc alpinelinux.yaml -o image.architecture=aarch64 -o image.release=edge -o image.variant=default
+        rm meta.tar.xz && mv rootfs.tar.xz alpinelinuxarm64
+    else
+        logger 4 "error when building alpinelinux edge arm64"
+    end
 end

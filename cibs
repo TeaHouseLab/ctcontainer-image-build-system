@@ -72,133 +72,78 @@ set installname $argv[1]
   set_color normal
 end
 
-function arch_based
-    switch $argv[1]
-        case archlinux
-            cd /ctcontainer_share
-            if test -d archlinux
-            else
-                mkdir archlinux
-            end
-            pacstrap archlinux base
-            cd archlinux
-            tar zcf archlinux.tar.gz .
-            cd ..
-            mv archlinux/archlinux.tar.gz .
-        case manjarolinux
-            if test -d manjarolinux
-            else
-                mkdir manjarolinux
-            end
-            cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
-            echo 'Server = https://mirrors.sjtug.sjtu.edu.cn/manjaro/stable/$repo/$arch' > /etc/pacman.d/mirrorlist
-            cd /ctcontainer_share
-            pacstrap manjarolinux base pamac-gtk pamac-cli
-            cd manjarolinux
-            tar zcf manjarolinux.tar.gz .
-            cd ..
-            mv manjarolinux/manjarolinux.tar.gz .
-            mv /etc/pacman.d/mirrorlist.bak /etc/pacman.d/mirrorlist
-        case arcolinux
-            cd /ctcontainer_share
-            pacstrap arcolinux base
-        case v h '*'
-            logger 4 "Unexpected Input,abort"
-            exit
+function centos
+    logger "Building centos7 amd64"
+    if sudo distrobuilder build-lxc ./files/centos.yaml -o image.architecture=x86_64 -o image.release=7 -o image.variant=default -o source.url=http://mirrors.nju.edu.cn/centos/ -o source.skip_verification=true
+        rm meta.tar.xz && mv rootfs.tar.xz centos7
+    else
+        logger 4 "error when building centos7 amd64"
+    end
+    logger "Building centos7 arm64"
+    if sudo distrobuilder build-lxc ./files/centos.yaml -o image.architecture=aarch64 -o image.release=7 -o image.variant=default -o source.url=http://mirrors.nju.edu.cn/centos-altarch/ -o source.skip_verification=true
+        rm meta.tar.xz && mv rootfs.tar.xz centos7arm64
+    else
+        logger 4 "error when building centos7 arm64"
     end
 
-end
 
+    logger "Building centos8 amd64"
+    if sudo distrobuilder build-lxc ./files/centos.yaml -o image.architecture=x86_64 -o image.release=8-Stream -o image.variant=default -o source.url=http://mirrors.nju.edu.cn/centos/ -o source.skip_verification=true
+        rm meta.tar.xz && mv rootfs.tar.xz centos8
+    else
+        logger 4 "error when building centos8 amd64"
+    end
+    logger "Building centos8 arm64"
+    if sudo distrobuilder build-lxc ./files/centos.yaml -o image.architecture=aarch64 -o image.release=8-Stream -o image.variant=default -o source.url=http://mirrors.nju.edu.cn/centos-altarch/ -o source.skip_verification=true
+        rm meta.tar.xz && mv rootfs.tar.xz centos8arm64
+    else
+        logger 4 "error when building centos8 arm64"
+    end
+end
 function alpinelinux
-    cd /ctcontainer_share
-    if test -d alpinelinux
+    logger "Building alpinelinux edge amd64"
+    if sudo distrobuilder build-lxc ./files/alpinelinux.yaml -o image.architecture=x86_64 -o image.release=edge -o image.variant=default
+        rm meta.tar.xz && mv rootfs.tar.xz alpinelinux
     else
-        mkdir alpinelinux
+        logger 4 "error when building alpinelinux edge amd64"
     end
-    env apk --arch x86_64 -X https://dl-cdn.alpinelinux.org/alpine/edge/main/ -U --allow-untrusted --root /ctcontainer_share/alpinelinux --initdb add alpine-base bash fish coreutils
-    cd alpinelinux
-    echo "https://dl-cdn.alpinelinux.org/alpine/edge/main
-http://dl-cdn.alpinelinux.org/alpine/edge/community" >etc/apk/repositories
-    tar zcf alpinelinux.tar.gz .
-    cd ..
-    mv alpinelinux/alpinelinux.tar.gz .
+    logger "Building alpinelinux edge arm64"
+    if sudo distrobuilder build-lxc alpinelinux.yaml -o image.architecture=aarch64 -o image.release=edge -o image.variant=default
+        rm meta.tar.xz && mv rootfs.tar.xz alpinelinuxarm64
+    else
+        logger 4 "error when building alpinelinux edge arm64"
+    end
 end
 
-function debian_based
-    if test -d built
+function archlinux
+    logger "Building archlinux amd64"
+    if sudo distrobuilder build-lxc ./files/archlinux.yaml -o image.architecture=x86_64 -o image.variant=default
+        rm meta.tar.xz && mv rootfs.tar.xz archlinux
     else
-        sudo mkdir built
+        logger 4 "error when building archlinux amd64"
     end
-    if [ "$argv[1]" = -a ]
-        logger 0 "Building All"
-        set distro debian-stable debian-testing debian-unstable deepin-stable parrothome-stable mxlinux-stable kali-rolling ubuntu-stable
+    logger "Building archlinux arm64"
+    if sudo distrobuilder build-lxc archlinux.yaml -o image.architecture=aarch64 -o image.variant=default
+        rm meta.tar.xz && mv rootfs.tar.xz archlinuxarm64
     else
-        if test -n "$argv[1]"
-            set distro $argv
-        else
-            logger 0 "avaiable rootfs
-debian-stable
-debian-testing
-debian-unstable
-deepin-stable
-parrotsec-testing
-kali-rolling
-ubuntu-stable"
-            logger 0 "Type them below,use space for multiple images"
-            read -P "$prefix >>> " distro
-        end
+        logger 4 "error when building archlinux arm64"
     end
-        for now_distro in $distro
-            switch $now_distro
-                case debian-stable debian-testing debian-unstable
-                    set branch stable
-                    set now_source http://deb.debian.org/debian/
-                case debian-testing
-                    set branch testing
-                    set now_source http://deb.debian.org/debian/
-                case debian-unstable
-                    set branch unstable
-                    set now_source http://deb.debian.org/debian/
-                case deepin-stable
-                    set no_check_gpg true
-                    set branch stable
-                    set now_source http://packages.deepin.com/deepin/
-                case parrotsec-testing
-                    set no_check_gpg true
-                    set branch testing
-                    set now_source http://deb.parrotsec.org/parrot
-                case kali-rolling
-                    set no_check_gpg true
-                    set branch kali-rolling
-                    set now_source http://http.kali.org/kali
-                case ubuntu-stable
-                    set no_check_gpg true
-                    set branch impish
-                    set now_source http://archive.ubuntu.com/ubuntu/
-            end
-            if [ "$now_source" = "" ]
-                logger 4 "No distro to build,abort"
-                exit
-            end
-            if [ "$no_check_gpg" = true ]
-                sudo env http_proxy=http://127.0.0.1:7890 https_proxy=http://127.0.0.1:7890 DEBIAN_FRONTEND=noninteractive debootstrap --no-check-gpg $branch $now_distro $now_source
-                cd $now_distro
-                tar zcf $now_distro.tar.gz .
-                cd ..
-                sudo mv $now_distro/$now_distro.tar.gz built/
-                echo $now_distro >> built/available
-                logger 1 "Built,rootfs at $now_distro.tar.gz"
-            else
-                sudo env http_proxy=http://127.0.0.1:7890 https_proxy=http://127.0.0.1:7890 DEBIAN_FRONTEND=noninteractive debootstrap $branch $now_distro $now_source
-                cd $now_distro
-                tar zcf $now_distro.tar.gz .
-                cd ..
-                sudo mv $now_distro/$now_distro.tar.gz built/
-                echo $now_distro >> built/available
-                logger 1 "Built,rootfs at $now_distro.tar.gz"
-            end
-        end
+end
+
+function debian
+    logger "Building debian-stable amd64"
+    if sudo distrobuilder build-lxc ./files/debian.yaml -o image.architecture=amd64 -o image.release=bullseye -o image.variant=default -o source.url="http://mirrors.bfsu.edu.cn/debian"
+        rm meta.tar.xz && mv rootfs.tar.xz debian-stable
+    else
+        logger 4 "error when building debian-stable amd64"
     end
+    logger "Building debian-stable arm64"
+    if sudo distrobuilder build-lxc debian.yaml -o image.architecture=arm64 -o image.release=bullseye -o image.variant=default -o source.url="http://mirrors.bfsu.edu.cn/debian"
+        rm meta.tar.xz && mv rootfs.tar.xz debian-stablearm64
+    else
+        logger 4 "error when building debian-stable arm64"
+    end
+end
 
 function voidlinux
     cd /ctcontainer_share
@@ -213,19 +158,21 @@ function voidlinux
     mv voidlinux/voidlinux.tar.gz .
 end
 
-echo Build_Time_UTC=2022-03-30_01:46:09
+echo Build_Time_UTC=2022-05-28_03:46:46
 set -lx prefix [ctc-rootfs-build-system]
 switch $argv[1]
-case debian_based
-    debian_based $argv[2..-1]
-case arch_based
-    arch_based $argv[2..-1]
+case debian
+    debian
+case archlinux
+    archlinux
+case centos
+    centos
 case alpinelinux
     alpinelinux
 case voidlinux
     voidlinux
 case v version
-    logger 0 "BlackDeath@build1"
+    logger 0 "Quicksand@build1"
 case help h '*'
     help_echo
 end
